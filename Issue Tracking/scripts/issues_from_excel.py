@@ -31,7 +31,7 @@ writeLines = []
 for issue in listTable:
     writeLines.append(f"- id: {issue.issueID}")
     writeLines.append(f"- title: {issue.issueName}")
-    writeLines.append(f"- body: {issue.Description}")
+    writeLines.append(f"- body: \"{issue.Description}\"")
     tags = issue.Tags.split(", ")
     writeLines.append(f"- labels: ")
     for tag in tags:

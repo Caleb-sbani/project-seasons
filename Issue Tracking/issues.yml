@@ -43,202 +43,202 @@ milestones:
 issues:
 - id: feature-1
 - title: playerController
-- body: controller for player movement up is up, down is down etc…
+- body: "controller for player movement up is up, down is down etc…"
 - labels: 
   - underlying-logic
   - player
   - increment-1
 - id: feature-2
 - title: playerCollider
-- body: player collider to interact with and activate their collision-objects method
+- body: "player collider to interact with and activate their collision-objects method"
 - labels: 
   - underlying-logic
   - player
   - increment-1
 - id: feature-3
 - title: WallObject
-- body: object that does not allow player collision (upon activation sends player back to previous spot)
+- body: "object that does not allow player collision (upon activation sends player back to previous spot)"
 - labels: 
   - underlying-logic
   - increment-1
 - id: feature-4
 - title: goalObject
-- body: object that completes the level, call an exit method and leave for right now, will eventually transition to next level
+- body: "object that completes the level, call an exit method and leave for right now, will eventually transition to next level"
 - labels: 
   - underlying-logic
   - increment-1
 - id: feature-5
 - title: KillObject
-- body: kill player, send back to level beginning
+- body: "kill player, send back to level beginning"
 - labels: 
   - underlying-logic
   - increment-1
 - id: feature-6
 - title: SeasonShiftingCounter
-- body: counter maintained upon player movement in global variable that shifts every few steps in order to change seasons
+- body: "counter maintained upon player movement in global variable that shifts every few steps in order to change seasons"
 - labels: 
   - underlying-logic
   - increment-1
 - id: feature-7
 - title: SeasonShiftingMethod
-- body: calls this upon every block that needs it, ie: in winter, water changes to ice, is now walkable
+- body: "calls this upon every block that needs it, ie: in winter, water changes to ice, is now walkable"
 - labels: 
   - underlying-logic
   - increment-2
 - id: feature-8
 - title: SeasonShifting
-- body: calls a different method 4 times every full cycle.
+- body: "calls a different method 4 times every full cycle."
 - labels: 
   - underlying-logic
   - increment-2
 - id: feature-9
 - title: UI - BASE
-- body: ui title click here to begin screen
+- body: "ui title click here to begin screen"
 - labels: 
   - UI
   - increment-1
 - id: feature-10
 - title: Title
-- body: title screen, continue, settings, and exit options available
+- body: "title screen, continue, settings, and exit options available"
 - labels: 
   - UI
   - increment-2
 - id: feature-11
 - title: level select
-- body: select from the premade levels
+- body: "select from the premade levels"
 - labels: 
   - UI
   - increment-3
 - id: feature-12
 - title: volume slider
-- body: alters volume
+- body: "alters volume"
 - labels: 
   - UI
   - increment-3
 - id: feature-13
 - title: exit button
-- body: exits the UI settings pop up
+- body: "exits the UI settings pop up"
 - labels: 
   - UI
   - increment-2
 - id: feature-14
 - title: main menu
-- body: like the title screen except you can return to it
+- body: "like the title screen except you can return to it"
 - labels: 
   - UI
   - increment-2
 - id: feature-15
 - title: on-screen text popup
-- body: screen pops up in speech blurb at bottom of screen to give player information, should be a method callable by the player in given circumstances
+- body: "screen pops up in speech blurb at bottom of screen to give player information, should be a method callable by the player in given circumstances"
 - labels: 
   - UI
   - increment-2
 - id: feature-16
 - title: tutorial level
-- body: level utilizing basic objects to create a finishable, completable level with on-screen text pop-ups to explain it
+- body: "level utilizing basic objects to create a finishable, completable level with on-screen text pop-ups to explain it"
 - labels: 
   - level
   - increment-2
 - id: feature-17
 - title: level 1
-- body: have your freedom with this, utilize all implimented features from tutorial to create a solution only solvable with a specific set of moves
+- body: "have your freedom with this, utilize all implimented features from tutorial to create a solution only solvable with a specific set of moves"
 - labels: 
   - level
   - increment-2
 - id: feature-18
 - title: level 2
-- body: have fun!
+- body: "have fun!"
 - labels: 
   - level
   - increment-3
 - id: feature-19
 - title: level 3
-- body: have fun!
+- body: "have fun!"
 - labels: 
   - level
   - increment-3
 - id: feature-20
 - title: level 4
-- body: have fun!
+- body: "have fun!"
 - labels: 
   - level
   - increment-3
 - id: feature-21
 - title: level 5
-- body: have fun!
+- body: "have fun!"
 - labels: 
   - level
   - increment-3
 - id: feature-22
 - title: level 6
-- body: have fun!
+- body: "have fun!"
 - labels: 
   - level
   - increment-3
 - id: feature-23
 - title: level 7
-- body: have fun!
+- body: "have fun!"
 - labels: 
   - level
   - increment-3
 - id: feature-24
 - title: level 8
-- body: have fun!
+- body: "have fun!"
 - labels: 
   - level
   - increment-3
 - id: feature-25
 - title: level 9
-- body: have fun!
+- body: "have fun!"
 - labels: 
   - level
   - increment-3
 - id: feature-26
 - title: level 10
-- body: have fun!
+- body: "have fun!"
 - labels: 
   - level
   - increment-3
 - id: feature-27
 - title: issueTracker
-- body: This goddamn thing
+- body: "This goddamn thing"
 - labels: 
   - maintenance
   - increment-1
 - id: feature-28
 - title: waterObject
-- body: object that becomes a KillObject on most seasons, but during the winter becomes a background floor object
+- body: "object that becomes a KillObject on most seasons, but during the winter becomes a background floor object"
 - labels: 
   - obstacle
   - increment-2
 - id: feature-29
 - title: spikes
-- body: kill player, send back to level beginning
+- body: "kill player, send back to level beginning"
 - labels: 
   - obstacle
   - increment-2
 - id: feature-30
 - title: lava
-- body: during a rainy spring, hardens, becomes walkable, otherwise killObject
+- body: "during a rainy spring, hardens, becomes walkable, otherwise killObject"
 - labels: 
   - obstacle
   - increment-3
 - id: feature-31
 - title: void
-- body: fills up with leaves in fall, becomes walkable, otherwise KillObject
+- body: "fills up with leaves in fall, becomes walkable, otherwise KillObject"
 - labels: 
   - obstacle
   - increment-2
 - id: feature-32
 - title: coin
-- body: coin collectible item
+- body: "coin collectible item"
 - labels: 
   - obstacle
   - extra
   - increment-2
 - id: feature-33
 - title: coinCounter
-- body: coin collectible item counter to display in UI menu
+- body: "coin collectible item counter to display in UI menu"
 - labels: 
   - underlying-logic
   - extra
@@ -246,14 +246,14 @@ issues:
   - increment-2
 - id: feature-34
 - title: button
-- body: button item that activates set flags on specific objects
+- body: "button item that activates set flags on specific objects"
 - labels: 
   - underlying-logic
   - obstacle
   - increment-3
 - id: feature-35
 - title: doorObject
-- body: item that opens for a set time after button has been pressed.
+- body: "item that opens for a set time after button has been pressed."
 - labels: 
   - obstacle
   - increment-3
