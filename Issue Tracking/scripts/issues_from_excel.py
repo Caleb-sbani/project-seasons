@@ -30,10 +30,10 @@ for row in table2.iter_rows(2, table2.max_row):
 writeLines = []
 for issue in listTable:
     writeLines.append(f"- id: {issue.issueID}")
-    writeLines.append(f"- title: {issue.issueName}")
-    writeLines.append(f"- body: \"{issue.Description}\"")
+    writeLines.append(f"  title: {issue.issueName}")
+    writeLines.append(f"  body: \"{issue.Description}\"")
     tags = issue.Tags.split(", ")
-    writeLines.append(f"- labels: ")
+    writeLines.append(f"  labels: ")
     for tag in tags:
         writeLines.append(f"  - {tag}")
     writeLines.append(f"  - {issue.timeline}")

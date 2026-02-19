@@ -1,34 +1,34 @@
 version: 1
 labels:
 - name: increment-1
-  color: #FFFFFF
+  color: "#FFFFFF"
   description: ''
 - name: increment-2
-  color: #FFFFFF
+  color: "#FFFFFF"
   description: ''
 - name: increment-3
-  color: #ffffff
+  color: "#ffffff"
   description: ''
 - name: underlying-logic
-  color: #22BB22
+  color: "#22BB22"
   description: underlying logic for game
 - name: player
-  color: #BB2222
+  color: "#BB2222"
   description: attached or directly working with player object
 - name: UI
-  color: #BB00BB
+  color: "#BB00BB"
   description: attached to UI objects or UI directly
 - name: level
-  color: #00BB00
+  color: "#00BB00"
   description: it is a level
 - name: maintenance
-  color: #550077
+  color: "#550077"
   description: attached directly to issue tracker or managerial duties
 - name: obstacle
-  color: #FF0000
+  color: "#FF0000"
   description: obstacle for player
 - name: extra
-  color: #44BB77
+  color: "#44BB77"
   description: extra things we can wait to complete
 milestones:
 - title: increment-1
