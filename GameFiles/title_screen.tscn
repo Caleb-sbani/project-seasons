@@ -1,0 +1,61 @@
+[gd_scene load_steps=3 format=3 uid="uid://c2hu76hl7vkdp"]
+
+[ext_resource type="Script" uid="uid://74jjeromnnlj" path="res://scripts/TitleScreen.gd" id="1_ak2if"]
+[ext_resource type="Texture2D" uid="uid://q6tuhi1jq48r" path="res://assets/sprites/snail.png" id="2_ig5kc"]
+
+[node name="Title Screen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ak2if")
+
+[node name="WinterCorner" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 579.0
+offset_bottom = 324.0
+color = Color(0.2901961, 0.5019608, 0.8862745, 1)
+
+[node name="SpringCorner" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 579.0
+offset_right = 1158.0
+offset_bottom = 324.0
+color = Color(0.95686275, 0.8156863, 0.24705882, 1)
+
+[node name="SummerCorner" type="ColorRect" parent="."]
+layout_mode = 0
+offset_top = 324.0
+offset_right = 579.0
+offset_bottom = 648.0
+color = Color(0.90588236, 0.29803923, 0.23529412, 1)
+
+[node name="FallCorner" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 579.0
+offset_top = 324.0
+offset_right = 1158.0
+offset_bottom = 648.0
+color = Color(0.54509807, 0.27058825, 0.07450981, 1)
+
+[node name="Snail" type="Sprite2D" parent="."]
+position = Vector2(579, 324)
+scale = Vector2(2, 2)
+texture = ExtResource("2_ig5kc")
+
+[node name="StartButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.5
+offset_top = -31.0
+offset_right = 20.5
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 32
+text = "Play"
