@@ -1,0 +1,545 @@
+extends Node2D
+
+const TILE_SIZE = 32  # our sprites are 32x32
+
+# various trackers
+var current_stage = 1
+var player_pos = Vector2i(0, 0)
+var step_counter = 0
+var change_frequency = 4
+var has_honey = false
+var wind_direction = Vector2i(1, 0)  # right by default
+
+# ttrackers for tutorial highlights
+var shown_step_counter_hint = false
+var shown_change_freq_hint = false
+var shown_wind_hint = false
+
+# object refrences
+var player_sprite = null
+var tutorial_panel = null
+var boxes = []
+
+func _ready():
+	setup_ui()
+	load_stage(current_stage)
+
+func setup_ui():
+	# centers camera and properly scales game
+	var camera = Camera2D.new()
+	camera.name = "Camera"
+	camera.position = Vector2(128, 96)  # centers on a 7x5 grid (can change later)
+	camera.zoom = Vector2(2.5, 2.5)  # made tiles bigger cause it felt too small
+	add_child(camera)
+	
+	# UI layer
+	var ui = CanvasLayer.new()
+	ui.name = "UI"
+	add_child(ui)
+	
+	# put the UI elements of the hints all on the right side so they do not cover the game screen
+	var right_panel = Panel.new()
+	right_panel.name = "RightPanel"
+	right_panel.set_anchors_preset(Control.PRESET_RIGHT_WIDE)
+	right_panel.offset_left = -400  # 400 pixels wide
+	right_panel.offset_top = 0
+	right_panel.offset_right = 0
+	right_panel.offset_bottom = 0
+	ui.add_child(right_panel)
+	
+	# tutorial text goes at the top of the right panel
+	var text_container = MarginContainer.new()
+	text_container.name = "TextContainer"
+	text_container.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	text_container.offset_left = 10
+	text_container.offset_right = -10
+	text_container.offset_top = 20
+	text_container.offset_bottom = 300
+	right_panel.add_child(text_container)
+	
+	var label = Label.new()
+	label.name = "TutorialText"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	label.set_anchors_preset(Control.PRESET_FULL_RECT)
+	label.add_theme_font_size_override("font_size", 16)
+	text_container.add_child(label)
+	
+	# HUD Container goes in the middle of right panel
+	var hud = VBoxContainer.new()
+	hud.name = "HUD"
+	hud.position = Vector2(20, 320)
+	right_panel.add_child(hud)
+	
+	# step counter
+	var step_label = Label.new()
+	step_label.name = "StepCounter"
+	step_label.text = "Steps: 0"
+	step_label.add_theme_font_size_override("font_size", 20)
+	hud.add_child(step_label)
+	
+	# spacing for UI elements
+	var spacer1 = Control.new()
+	spacer1.custom_minimum_size = Vector2(0, 10)
+	hud.add_child(spacer1)
+	
+	# season change tracker (seasons changing not actually implemented for tutorial)
+	var freq_label = Label.new()
+	freq_label.name = "ChangeFrequency"
+	freq_label.text = "Season changes in: 4"
+	freq_label.add_theme_font_size_override("font_size", 20)
+	hud.add_child(freq_label)
+	
+	# spacing for UI elements
+	var spacer2 = Control.new()
+	spacer2.custom_minimum_size = Vector2(0, 10)
+	hud.add_child(spacer2)
+	
+	# wind direction indicator
+	var wind_label = Label.new()
+	wind_label.name = "WindDirection"
+	wind_label.text = "Wind: →"
+	wind_label.add_theme_font_size_override("font_size", 24)
+	wind_label.visible = false  # hidden until stage 7
+	hud.add_child(wind_label)
+	
+	tutorial_panel = text_container
+
+func load_stage(stage_num: int):
+	# clears the previous level
+	clear_level()
+	
+	# resets states for new lvl
+	step_counter = 0
+	has_honey = false
+	shown_step_counter_hint = false
+	shown_change_freq_hint = false
+	shown_wind_hint = false
+	update_hud()
+	
+	# loads the appropriate stage of tutorial
+	match stage_num:
+		1:
+			load_stage_1()
+		2:
+			load_stage_2()
+		3:
+			load_stage_3()
+		4:
+			load_stage_4()
+		5:
+			load_stage_5()
+		6:
+			load_stage_6()
+		7:
+			load_stage_7()
+
+func clear_level():
+	# remove all child nodes except UI and camera for the reset
+	for child in get_children():
+		if child.name != "UI" and child.name != "Camera":
+			child.queue_free()
+	
+	boxes.clear()
+	player_sprite = null
+
+func create_map(layout: Array, instruction_text: String):
+	var rows = layout.size()
+	var cols = layout[0].length()
+	
+	# adds the outer walls around the lvls
+	# top & bottom
+	for x in range(cols + 2):
+		create_tile(Vector2i(x, 0), 'w')
+		create_tile(Vector2i(x, rows + 1), 'w')
+	
+	# left & right
+	for y in range(rows + 2):
+		create_tile(Vector2i(0, y), 'w')
+		create_tile(Vector2i(cols + 1, y), 'w')
+	
+	# creates the lvl content
+	for y in range(rows):
+		for x in range(cols):
+			var tile = layout[y][x]
+			var grid_pos = Vector2i(x + 1, y + 1)  # offset to account for walls
+			
+			if tile == 'p':
+				player_pos = grid_pos
+				create_tile(grid_pos, 'g')  # grass under player
+				spawn_player(grid_pos)
+			elif tile == 'm':
+				create_tile(grid_pos, 'g')  # grass under box
+				spawn_box(grid_pos)
+			elif tile == 'B':
+				create_tile(grid_pos, 'g')  # grass under bee
+				create_tile(grid_pos, 'B')
+			else:
+				create_tile(grid_pos, tile)
+	
+	# show tutorial instructions
+	show_tutorial_text(instruction_text)
+
+func create_tile(grid_pos: Vector2i, tile_type: String):
+	var sprite = Sprite2D.new()
+	sprite.position = Vector2(grid_pos) * TILE_SIZE
+	sprite.centered = false  # DON'T center. Centering causes weird gaps
+	
+	match tile_type:
+		'g':
+			sprite.texture = load("res://assets/sprites/grass.png")
+		'w':
+			sprite.texture = load("res://assets/sprites/wall.png")
+		'W':
+			sprite.texture = load("res://assets/sprites/water.png")
+		'i':
+			sprite.texture = load("res://assets/sprites/ice.png")
+		's':
+			sprite.texture = load("res://assets/sprites/sinkhole.png")
+		'b':
+			sprite.texture = load("res://assets/sprites/beehive.png")
+		'B':
+			sprite.texture = load("res://assets/sprites/bee.png")
+		'G':
+			sprite.texture = load("res://assets/sprites/goal.png")
+	
+	add_child(sprite)
+
+func spawn_player(grid_pos: Vector2i):
+	player_sprite = Sprite2D.new()
+	player_sprite.texture = load("res://assets/sprites/snail.png")
+	player_sprite.position = Vector2(grid_pos) * TILE_SIZE
+	player_sprite.centered = false
+	player_sprite.name = "Player"
+	player_sprite.z_index = 10  # renders the player on top of everything so the player is always visible
+	add_child(player_sprite)
+
+func spawn_box(grid_pos: Vector2i):
+	var box = Sprite2D.new()
+	box.texture = load("res://assets/sprites/movable_box.png")
+	box.position = Vector2(grid_pos) * TILE_SIZE
+	box.centered = false
+	box.set_meta("grid_pos", grid_pos)
+	box.name = "Box"
+	box.z_index = 5  # renders boxes above tiles but below player
+	boxes.append(box)
+	add_child(box)
+
+func show_tutorial_text(text: String):
+	$UI/RightPanel/TextContainer/TutorialText.text = text
+
+func update_hud():
+	$UI/RightPanel/HUD/StepCounter.text = "Steps: %d" % step_counter
+	var steps_until_change = change_frequency - (step_counter % change_frequency)
+	$UI/RightPanel/HUD/ChangeFrequency.text = "Season changes in: %d" % steps_until_change
+
+func _unhandled_input(event):
+	var direction = Vector2i.ZERO
+	
+	if event.is_action_pressed("ui_up"):
+		direction = Vector2i(0, -1)
+	elif event.is_action_pressed("ui_down"):
+		direction = Vector2i(0, 1)
+	elif event.is_action_pressed("ui_left"):
+		direction = Vector2i(-1, 0)
+	elif event.is_action_pressed("ui_right"):
+		direction = Vector2i(1, 0)
+	
+	if direction != Vector2i.ZERO:
+		try_move_player(direction)
+
+func try_move_player(direction: Vector2i):
+	var new_pos = player_pos + direction
+	
+	# is a box in the way
+	var box_at_pos = get_box_at(new_pos)
+	if box_at_pos:
+		# if box is immovable (on water/sinkhole), player can walk over it
+		if box_at_pos.get_meta("immovable", false):
+			move_player(new_pos)
+			return
+		
+		# else push the box
+		if try_push_box(box_at_pos, direction):
+			move_player(new_pos)
+		return
+	
+	# check what type of tile is at new position
+	if can_move_to(new_pos):
+		move_player(new_pos)
+		
+		# stage 7 specific
+		if current_stage == 7 and direction == wind_direction:
+			var boost_pos = new_pos + wind_direction
+			# check if boost position has a box (not sure how we want to handle this yet)
+			var boost_box = get_box_at(boost_pos)
+			if boost_box:
+				if boost_box.get_meta("immovable", false):
+					move_player(boost_pos, false)  # don't increment steps twice
+			elif can_move_to(boost_pos):
+				move_player(boost_pos, false)  # don't increment steps twice
+
+func can_move_to(grid_pos: Vector2i) -> bool:
+	var tile = get_tile_at(grid_pos)
+	
+	# can't walk through walls
+	if tile == 'w':
+		# stage 5 specific
+		if has_honey and current_stage == 5:
+			has_honey = false
+			return true
+		return false
+	
+	# water kills you
+	if tile == 'W':
+		player_death("You drowned!")
+		return false
+	
+	# bees sting you to death
+	if tile == 'B' and current_stage == 4:
+		player_death("Ouch! Stung by a bee!")
+		return false
+	
+	# beehive gives honey
+	if tile == 'b' and current_stage == 5:
+		has_honey = true
+		show_tutorial_text("You got honey! You can now climb over one wall!")
+	
+	# sinkholes kill you
+	if tile == 's':
+		player_death("You fell into a sinkhole!")
+		return false
+	
+	return true
+
+func get_tile_at(grid_pos: Vector2i) -> String:
+	# checks tiles by position
+	var world_pos = Vector2(grid_pos) * TILE_SIZE
+	
+	for child in get_children():
+		if child is Sprite2D and child.name != "Player" and not child.name.begins_with("Box"):
+			if child.position.distance_to(world_pos) < 5:
+				# determine type
+				var texture_path = child.texture.resource_path
+				if "wall" in texture_path:
+					return 'w'
+				elif "water" in texture_path:
+					return 'W'
+				elif "ice" in texture_path:
+					return 'i'
+				elif "sinkhole" in texture_path:
+					return 's'
+				elif "bee.png" in texture_path:  # bee.png not beehive
+					return 'B'
+				elif "beehive" in texture_path:
+					return 'b'
+				elif "goal" in texture_path:
+					return 'G'
+	
+	return 'g'
+
+func get_box_at(grid_pos: Vector2i):
+	for box in boxes:
+		if box.get_meta("grid_pos") == grid_pos:
+			return box
+	return null
+
+func try_push_box(box, direction: Vector2i) -> bool:
+	var box_pos = box.get_meta("grid_pos")
+	var new_box_pos = box_pos + direction
+	
+	# can box be pushed there
+	var tile = get_tile_at(new_box_pos)
+	
+	if tile == 'W' or tile == 's':
+		box.set_meta("grid_pos", new_box_pos)
+		box.set_meta("immovable", true)
+		animate_move(box, new_box_pos)
+		return true
+	
+	# can't push if there's a wall or another box
+	if tile == 'w' or get_box_at(new_box_pos):
+		return false
+	
+	# can't push immovable boxes
+	if box.get_meta("immovable", false):
+		return false
+	
+	# actually moves the box
+	box.set_meta("grid_pos", new_box_pos)
+	animate_move(box, new_box_pos)
+	return true
+
+func move_player(new_pos: Vector2i, increment_steps: bool = true):
+	player_pos = new_pos
+	animate_move(player_sprite, new_pos)
+	
+	if increment_steps:
+		step_counter += 1
+		update_hud()
+		
+		# stage 3 hints after first move
+		if current_stage == 3 and step_counter == 1:
+			if not shown_step_counter_hint:
+				shown_step_counter_hint = true
+				await get_tree().create_timer(0.5).timeout
+				highlight_hud_element("StepCounter")
+				show_tutorial_text("Here is your step counter. You can keep track of how many steps you have made in the current season.")
+				await get_tree().create_timer(3).timeout
+			
+			if not shown_change_freq_hint:
+				shown_change_freq_hint = true
+				highlight_hud_element("ChangeFrequency")
+				show_tutorial_text("Here is the change frequency. The map will change seasons every time your steps reach this number.")
+	
+	# ALWAYS check if reached goal after moving
+	# player must LAND on goal to win
+	if get_tile_at(new_pos) == 'G':
+		await get_tree().create_timer(0.5).timeout
+		on_goal_reached()
+
+func highlight_hud_element(element_name: String):
+	var element = $UI/RightPanel/HUD.get_node(element_name)
+	var original_color = element.modulate
+	
+	# flashes yellow to grab attention
+	for i in range(3):
+		element.modulate = Color(1, 1, 0)  # Yellow
+		await get_tree().create_timer(0.3).timeout
+		element.modulate = original_color
+		await get_tree().create_timer(0.3).timeout
+
+func animate_move(sprite: Sprite2D, grid_pos: Vector2i):
+	var target_pos = Vector2(grid_pos) * TILE_SIZE
+	var tween = create_tween()
+	tween.tween_property(sprite, "position", target_pos, 0.2)
+
+func player_death(death_message: String):
+	# death message
+	show_tutorial_text(death_message + "\n\nResetting level...")
+	
+	# temporarily disable input
+	set_process_unhandled_input(false)
+	
+	# flash player red for death
+	if player_sprite:
+		var original_modulate = player_sprite.modulate
+		player_sprite.modulate = Color(1, 0, 0)  # Red
+		await get_tree().create_timer(0.5).timeout
+		player_sprite.modulate = original_modulate
+	
+	# wait a moment
+	await get_tree().create_timer(1.0).timeout
+	
+	# reload current stage
+	load_stage(current_stage)
+	
+	# re-enable input
+	set_process_unhandled_input(true)
+
+func on_goal_reached():
+	if current_stage == 7:
+		# completion message
+		show_tutorial_text("Now that you're an expert, my job is done! The rest you'll figure out as you progress through the levels. Good luck!")
+		await get_tree().create_timer(4).timeout
+		# go to level select (not yet implemented)
+		get_tree().change_scene_to_file("res://scenes/LevelSelect.tscn")
+	else:
+		# fade to black and load next stage
+		await fade_to_black()
+		current_stage += 1
+		load_stage(current_stage)
+		await fade_from_black()
+
+func fade_to_black():
+	var fade = ColorRect.new()
+	fade.color = Color(0, 0, 0, 0)
+	fade.set_anchors_preset(Control.PRESET_FULL_RECT)
+	$UI.add_child(fade)
+	
+	var tween = create_tween()
+	tween.tween_property(fade, "color", Color(0, 0, 0, 1), 1.0)
+	await tween.finished
+	
+	await get_tree().create_timer(1).timeout
+	fade.queue_free()
+
+func fade_from_black():
+	var fade = ColorRect.new()
+	fade.color = Color(0, 0, 0, 1)
+	fade.set_anchors_preset(Control.PRESET_FULL_RECT)
+	$UI.add_child(fade)
+	
+	var tween = create_tween()
+	tween.tween_property(fade, "color", Color(0, 0, 0, 0), 1.0)
+	await tween.finished
+	
+	fade.queue_free()
+
+# ----------- STAGE DEFINITIONS -----------
+
+func load_stage_1():
+	var layout = [
+		"ggggg",
+		"pgwgG",
+		"ggggg"
+	]
+	create_map(layout, "Your mission is to get to the goal block! Watch out for walls, you can't go through them.")
+
+func load_stage_2():
+	var layout = [
+		"ggggg",
+		"pmWgG",
+		"ggggg"
+	]
+	create_map(layout, "You also can't walk on water. But don't fret, you can move these boxes to fill the gap!")
+
+func load_stage_3():
+	var layout = [
+		"ggigg",
+		"pgigG",
+		"ggigg"
+	]
+	create_map(layout, "Your journey begins in winter. It's sooooo cold that water freezes over into ice and you can walk over it! Be careful though, because it will only be frozen in winter...")
+
+func load_stage_4():
+	var layout = [
+		"gBbBg",
+		"pgBgG",
+		"ggggg"
+	]
+	create_map(layout, "After winter comes... Spring! In spring, the blocks surrounding beehives will become bees. Watch out, beeeeecasue they'll sting you.")
+
+func load_stage_5():
+	var layout = [
+		"ggbwg",
+		"pggwG",
+		"gggwg"
+	]
+	create_map(layout, "When it's not spring, you can still see the beehives. If you step on a beehive in any other season you'll get honey on you, which will let you climb over one wall.")
+
+func load_stage_6():
+	var layout = [
+		"ggggg",
+		"pgsgG",
+		"ggggg"
+	]
+	create_map(layout, "The next season is (drumroll please) Summer! In summer, sinkholes open up. They are visible as cracks in the ground for the first two seasons and open up once the humid summer air hits. You can also fill sinkholes with blocks.")
+
+func load_stage_7():
+	$UI/RightPanel/HUD/WindDirection.visible = true
+	
+	var layout = [
+		"ggggg",
+		"pggGg",
+		"ggggg"
+	]
+	create_map(layout, "Our last season is fall. In fall it gets very windy. If you move in the direction the wind is blowing, you will move two blocks in one move!")
+	
+	# highlight wind after a moment
+	await get_tree().create_timer(3).timeout
+	if not shown_wind_hint:
+		shown_wind_hint = true
+		highlight_hud_element("WindDirection")
+		show_tutorial_text("Here you can see what direction the wind is blowing in.")
