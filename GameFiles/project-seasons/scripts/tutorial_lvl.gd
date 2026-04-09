@@ -10,6 +10,8 @@ var change_frequency = 4
 var has_honey = false
 var wind_direction = Vector2i(1, 0)  # right by default
 
+var input_locked = false
+
 # ttrackers for tutorial highlights
 var shown_step_counter_hint = false
 var shown_change_freq_hint = false
@@ -19,6 +21,8 @@ var shown_wind_hint = false
 var player_sprite = null
 var tutorial_panel = null
 var boxes = []
+
+var settings_scene = preload("res://SettingsMenu.tscn")
 
 func _ready():
 	setup_ui()
@@ -72,6 +76,33 @@ func setup_ui():
 	hud.position = Vector2(20, 320)
 	right_panel.add_child(hud)
 	
+	# --- Settings Button ---
+	# --- Settings Button ---
+	var settings_button = Button.new()
+	settings_button.name = "SettingsButton"
+	settings_button.text = "⚙"  # gear symbol for settings
+	settings_button.tooltip_text = "Settings"
+	settings_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	settings_button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	settings_button.custom_minimum_size = Vector2(40, 40)  # button size
+
+	# Anchors to top-right corner
+	settings_button.anchor_left = 1.0
+	settings_button.anchor_top = 0.0
+	settings_button.anchor_right = 1.0
+	settings_button.anchor_bottom = 0.0
+
+	# Offset from top-right
+	settings_button.offset_left = -50  # distance from right edge
+	settings_button.offset_top = 10    # distance from top
+	settings_button.offset_right = 0
+	settings_button.offset_bottom = 0
+
+	ui.add_child(settings_button)
+
+	# connect the pressed signal
+	settings_button.pressed.connect(_on_settings_pressed)
+	
 	# step counter
 	var step_label = Label.new()
 	step_label.name = "StepCounter"
@@ -105,6 +136,19 @@ func setup_ui():
 	hud.add_child(wind_label)
 	
 	tutorial_panel = text_container
+
+func _on_settings_pressed():
+	if input_locked:
+		return
+		
+	input_locked = true
+	
+	var settings = settings_scene.instantiate()
+	settings.tree_exited.connect(_on_settings_closed)
+	$UI.add_child(settings)
+
+func _on_settings_closed():
+	input_locked = false
 
 func load_stage(stage_num: int):
 	# clears the previous level
@@ -235,6 +279,9 @@ func update_hud():
 	$UI/RightPanel/HUD/ChangeFrequency.text = "Season changes in: %d" % steps_until_change
 
 func _unhandled_input(event):
+	if input_locked:
+		return
+	
 	var direction = Vector2i.ZERO
 	
 	if event.is_action_pressed("ui_up"):

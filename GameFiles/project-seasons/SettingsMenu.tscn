@@ -1,0 +1,78 @@
+[gd_scene format=3 uid="uid://ct6rpg522ftq"]
+
+[ext_resource type="Script" uid="uid://cxvdtlwty82ih" path="res://scripts/settings_menu.gd" id="1_svoao"]
+
+[node name="Control" type="Control" unique_id=235169812]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_svoao")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1563082188]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5019608)
+
+[node name="Panel" type="ColorRect" parent="." unique_id=1119147335]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.22200002
+anchor_top = 0.19800001
+anchor_right = 0.77800006
+anchor_bottom = 0.79
+offset_left = 0.25598145
+offset_top = -0.3040161
+offset_right = -0.25604248
+offset_bottom = 0.07998657
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel" unique_id=2084628311]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.2
+anchor_top = 0.062000003
+anchor_right = 0.81200004
+anchor_bottom = 0.91700006
+offset_left = 8.0
+offset_top = 0.19199944
+offset_right = 0.3199463
+offset_bottom = -0.12802124
+
+[node name="Label" type="Label" parent="Panel/VBoxContainer" unique_id=700917967]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Settings"
+
+[node name="Audio" type="Button" parent="Panel/VBoxContainer" unique_id=1973590251]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Audio"
+
+[node name="Graphics" type="Button" parent="Panel/VBoxContainer" unique_id=380994563]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Graphics"
+
+[node name="HomeScreen" type="Button" parent="Panel/VBoxContainer" unique_id=1217837050]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Home Screen"
+
+[node name="CloseSetting" type="Button" parent="Panel/VBoxContainer" unique_id=325016809]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Close Settings"
+
+[node name="Quit" type="Button" parent="Panel/VBoxContainer" unique_id=466676717]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Quit"
