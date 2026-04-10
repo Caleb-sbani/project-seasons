@@ -132,7 +132,6 @@ func load_stage(stage_num: int):
 	step_counter = 0
 	player_locked = false
 	has_honey = false
-	update_hud()
 	
 	match stage_num:
 		1:
@@ -157,6 +156,7 @@ func load_stage(stage_num: int):
 #			load_stage_6()
 #		7:
 #			load_stage_7()
+	update_hud()
 
 func clear_level():
 	# remove all child nodes except UI and camera for the reset
@@ -511,7 +511,7 @@ func switch_season():
 	season = seasons_array[((step_counter/change_frequency)%4)]
 	if season == "Winter":
 		#do winter stuff
-		$UI/RightPanel/HUD/WindDirection.text = "×"
+		$UI/RightPanel/HUD/WindDirection.text = "Wind: ×"
 		for tile in waters:
 			tile.texture = load("res://assets/sprites/ice.png")
 	elif season == "Spring":
@@ -545,13 +545,13 @@ func switch_season():
 		#do fall stuff
 		#←, ↑, ↓, → or × for values
 		if (wind_direction == Vector2i(1, 0)):
-			$UI/RightPanel/HUD/WindDirection.text = "→"
+			$UI/RightPanel/HUD/WindDirection.text = "Wind: →"
 		if (wind_direction == Vector2i(-1, 0)):
-			$UI/RightPanel/HUD/WindDirection.text = "←"
+			$UI/RightPanel/HUD/WindDirection.text = "Wind: ←"
 		if (wind_direction == Vector2i(0, -1)):
-			$UI/RightPanel/HUD/WindDirection.text = "↑"
+			$UI/RightPanel/HUD/WindDirection.text = "Wind: ↑"
 		if (wind_direction == Vector2i(0, 1)):
-			$UI/RightPanel/HUD/WindDirection.text = "↓"
+			$UI/RightPanel/HUD/WindDirection.text = "Wind: ↓"
 
 #LEVEL BUILDING KEY:
 # p = player
