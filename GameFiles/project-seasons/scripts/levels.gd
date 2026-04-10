@@ -286,6 +286,13 @@ func _unhandled_input(event):
 		direction = Vector2i(-1, 0)
 	elif event.is_action_pressed("ui_right"):
 		direction = Vector2i(1, 0)
+		
+	if event is InputEventKey:
+		if event.pressed and event.keycode == KEY_H:
+			if ($UI.visible):
+				$UI.hide()
+			else:
+				$UI.show()
 	
 	if direction != Vector2i.ZERO:
 		try_move_player(direction)
@@ -344,7 +351,7 @@ func can_move_to(grid_pos: Vector2i) -> bool:
 		return false
 	
 	# beehive gives honey
-	if tile == 'b' and season == "Spring":
+	if tile == 'b':
 		has_honey = true
 	
 	# sinkholes kill you
