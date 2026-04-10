@@ -25,10 +25,6 @@ var bees = []
 var beehives = []
 var beehivespos = []
 
-##IMPLEMENT SPRITE SWITCHING DUMBASS
-##THEN IMPLEMENT THE MISSING SPRITES AND UPDATE LEVEL 1 TO MATCH
-
-
 func _ready():
 	setup_ui()
 	load_stage(current_stage)
@@ -140,11 +136,14 @@ func load_stage(stage_num: int):
 	
 	match stage_num:
 		1:
-			season = "Fall" #call switch season immediately after so season gets set up correctly
+			season = "Fall" #call switch season at the end of setup so season gets set up correctly
 			load_level_one()
 			var camera = get_viewport().get_camera_2d()
 			camera.position = Vector2(224, 128)  # centers on the 12x6 grid
 			camera.zoom = Vector2(2, 2)  # zooms out enough to view whole board
+			# camera positioning and zoom should be moved to create_map function later on by using fancy math to auto scale
+			# fancy math is 32 * (rows - 5) for x position, 32 * (columns - 2) for y position
+			# unsure of fancy math for zoom but thats something we can determine over time
 			switch_season()
 #		2:
 #			load_stage_2()
@@ -512,6 +511,7 @@ func switch_season():
 	season = seasons_array[((step_counter/change_frequency)%4)]
 	if season == "Winter":
 		#do winter stuff
+		$UI/RightPanel/HUD/WindDirection.text = "×"
 		for tile in waters:
 			tile.texture = load("res://assets/sprites/ice.png")
 	elif season == "Spring":
@@ -541,6 +541,17 @@ func switch_season():
 		for bee in bees:
 			bee.queue_free()
 		bees.clear()
+	elif season == "Fall":
+		#do fall stuff
+		#←, ↑, ↓, → or × for values
+		if (wind_direction == Vector2i(1, 0)):
+			$UI/RightPanel/HUD/WindDirection.text = "→"
+		if (wind_direction == Vector2i(-1, 0)):
+			$UI/RightPanel/HUD/WindDirection.text = "←"
+		if (wind_direction == Vector2i(0, -1)):
+			$UI/RightPanel/HUD/WindDirection.text = "↑"
+		if (wind_direction == Vector2i(0, 1)):
+			$UI/RightPanel/HUD/WindDirection.text = "↓"
 
 #LEVEL BUILDING KEY:
 # p = player
@@ -563,7 +574,7 @@ func load_level_one():
 		"wggggwggbggg",
 		"ggmgggwggggg",
 		"ggghgWHWgggb",
-		"gpgHgwgwggwg",
+		"gpgHgwgWggHg",
 		"gggmggwgggHh",
 		"bgggggwgggwG"
 	]
