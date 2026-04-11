@@ -8,11 +8,20 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="Project Seasons"
-config/features=PackedStringArray("4.5", "GL Compatibility")
+run/main_scene="uid://nofxe2atpnht"
+config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[autoload]
+
+GlobalLevel="*uid://d28dvoywyyemq"
 
 [rendering]
 

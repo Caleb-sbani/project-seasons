@@ -444,6 +444,8 @@ func on_goal_reached():
 		show_tutorial_text("Now that you're an expert, my job is done! The rest you'll figure out as you progress through the levels. Good luck!")
 		await get_tree().create_timer(4).timeout
 		# go to level select (not yet implemented)
+		if GlobalLevel.completedLevel < 0:
+			GlobalLevel.completedLevel = 0;
 		get_tree().change_scene_to_file("res://scenes/LevelSelect.tscn")
 	else:
 		# fade to black and load next stage

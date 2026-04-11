@@ -5,8 +5,8 @@ var seasons_array = ["Winter", "Spring", "Summer", "Fall"]
 
 # various trackers
 var player_locked = false
-var current_stage = 1
-var total_stages = 1
+var current_stage = GlobalLevel.level
+var total_stages = GlobalLevel.levels
 var player_pos = Vector2i(0, 0)
 var step_counter = 0
 var change_frequency = 4
@@ -144,8 +144,17 @@ func load_stage(stage_num: int):
 			# fancy math is 32 * (rows - 5) for x position, 32 * (columns - 2) for y position
 			# unsure of fancy math for zoom but thats something we can determine over time
 			switch_season()
-#		2:
-#			load_stage_2()
+		2:
+			#temporary
+			season = "Fall" #call switch season at the end of setup so season gets set up correctly
+			load_level_two()
+			var camera = get_viewport().get_camera_2d()
+			camera.position = Vector2(224, 128)  # centers on the 12x6 grid
+			camera.zoom = Vector2(2, 2)  # zooms out enough to view whole board
+			# camera positioning and zoom should be moved to create_map function later on by using fancy math to auto scale
+			# fancy math is 32 * (rows - 5) for x position, 32 * (columns - 2) for y position
+			# unsure of fancy math for zoom but thats something we can determine over time
+			switch_season()
 #		3:
 #			load_stage_3()
 #		4:
@@ -586,3 +595,16 @@ func load_level_one():
 		"bgggggwgggwG"
 	]
 	create_map(layout)
+
+func load_level_two():
+	wind_direction = Vector2i(1, 0)
+	var layout = [
+		"gggggggggggg",
+		"gggggggggggg",
+		"gggggggggggg",
+		"gggggggggggg",
+		"gggpgggggggg", #temp
+		"gggggggggggG"
+	]
+	create_map(layout)
+	
