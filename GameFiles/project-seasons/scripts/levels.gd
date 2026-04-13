@@ -137,23 +137,11 @@ func load_stage(stage_num: int):
 		1:
 			season = "Fall" #call switch season at the end of setup so season gets set up correctly
 			load_level_one()
-			var camera = get_viewport().get_camera_2d()
-			camera.position = Vector2(224, 128)  # centers on the 12x6 grid
-			camera.zoom = Vector2(2, 2)  # zooms out enough to view whole board
-			# camera positioning and zoom should be moved to create_map function later on by using fancy math to auto scale
-			# fancy math is 32 * (rows - 5) for x position, 32 * (columns - 2) for y position
-			# unsure of fancy math for zoom but thats something we can determine over time
 			switch_season()
 		2:
 			#temporary
 			season = "Fall" #call switch season at the end of setup so season gets set up correctly
 			load_level_two()
-			var camera = get_viewport().get_camera_2d()
-			camera.position = Vector2(224, 128)  # centers on the 12x6 grid
-			camera.zoom = Vector2(2, 2)  # zooms out enough to view whole board
-			# camera positioning and zoom should be moved to create_map function later on by using fancy math to auto scale
-			# fancy math is 32 * (rows - 5) for x position, 32 * (columns - 2) for y position
-			# unsure of fancy math for zoom but thats something we can determine over time
 			switch_season()
 #		3:
 #			load_stage_3()
@@ -166,6 +154,7 @@ func load_stage(stage_num: int):
 #		7:
 #			load_stage_7()
 	update_hud()
+
 
 func clear_level():
 	# remove all child nodes except UI and camera for the reset
@@ -215,6 +204,16 @@ func create_map(layout: Array):
 				create_tile(grid_pos, 'B')
 			else:
 				create_tile(grid_pos, tile)
+	var camera = get_viewport().get_camera_2d()
+	#camera hints: moving right with camera is +++x
+	# moving down with camera is ---y
+	print(cols)
+	print(rows)
+	camera.position = Vector2(32 * cols + 64, rows* 32.0 + 64)/2
+	#camera.zoom = Vector2(2, 2)
+	var t = min(12.0/cols, 6.0/rows)
+	t = pow(t, 0.75)
+	camera.zoom = Vector2(2.0 * t, 2.0 * t)
 
 func create_tile(grid_pos: Vector2i, tile_type: String):
 	var sprite = Sprite2D.new()
@@ -311,41 +310,51 @@ func try_move_player(direction: Vector2i):
 	var new_pos = player_pos + direction
 	var box_at_pos = get_box_at(new_pos)
 	# check what type of tile is at new position
-	if (get_tile_at(new_pos) != 'w'):
-		if season == "Fall" and direction == wind_direction and box_at_pos == null:
+	
+	if ((get_tile_at(new_pos) != 'w') or (has_honey and get_tile_at(new_pos) == 'w')):
+		if season == "Fall" and direction == wind_direction:
 			var boost_pos = new_pos + wind_direction
 			# check if boost position has a box (not sure how we want to handle this yet)
 			var boost_box = get_box_at(boost_pos)
-			var before_box = get_box_at(new_pos)
-			if before_box:
-				if (before_box.get_meta("immovable")):
-					move_player(new_pos)
-					return
-				
+			if box_at_pos:
+				if (box_at_pos.get_meta("immovable") == false):
+					if try_push_box(box_at_pos, direction):
+						move_player(new_pos)
+						return
+			else:
+				var tileat = get_tile_at(new_pos)
+				match tileat:
+					'B':
+						if (step_counter%4 != 3):
+							player_death("Stung by a bee!")
+						return
+					'w':
+						has_honey = false
 			if boost_box:
-				if boost_box.get_meta("immovable", false):
+				if (boost_box.get_meta("immovable")):
 					move_player(boost_pos, true)
 					return
+				else:
+					if (try_push_box(boost_box, direction)):
+						move_player(boost_pos)
+						return
 			elif can_move_to(boost_pos):
 				move_player(boost_pos, true)
 				return
 			if (get_tile_at(boost_pos) == 'w'):
 				if (can_move_to(new_pos)):
 					move_player(new_pos)
-		else:
-			
-			if box_at_pos:
-				# if box is immovable (on water/sinkhole), player can walk over it
-				if box_at_pos.get_meta("immovable"):
+		elif (season != "Fall" or direction != wind_direction):
+			if (box_at_pos):
+				if (box_at_pos.get_meta("immovable")):
 					move_player(new_pos)
 					return
-		
-				# else push the box
-				if try_push_box(box_at_pos, direction):
+				elif try_push_box(box_at_pos, direction):
 					move_player(new_pos)
 					return
 			elif (can_move_to(new_pos)):
 				move_player(new_pos)
+				return
 	
 	
 func can_move_to(grid_pos: Vector2i) -> bool:
@@ -366,7 +375,7 @@ func can_move_to(grid_pos: Vector2i) -> bool:
 		return false
 	
 	# bees sting you to death
-	if tile == 'B' and season == "Spring":
+	if tile == 'B' and season == "Spring" and step_counter%4 != 3:
 		player_death("Ouch! Stung by a bee!")
 		return false
 	
@@ -416,7 +425,6 @@ func get_box_at(grid_pos: Vector2i):
 	for box in boxes:
 		if box.get_meta("grid_pos") == grid_pos:
 			tempboxes.append(box)
-	print(tempboxes.size())
 	for b in tempboxes:
 		if b.get_meta("immovable") == true:
 			continue
@@ -446,7 +454,7 @@ func try_push_box(box, direction: Vector2i) -> bool:
 		return true
 	
 	# can't push if there's a wall or another box
-	if tile == 'w' or get_box_at(new_box_pos):
+	if tile == 'w' or get_box_at(new_box_pos) or tile == 'b':
 		return false
 	
 	# can't push immovable boxes
