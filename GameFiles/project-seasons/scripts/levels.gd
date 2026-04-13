@@ -413,12 +413,6 @@ func try_push_box(box, direction: Vector2i) -> bool:
 	# can box be pushed there
 	var tile = get_tile_at(new_box_pos)
 
-	if (get_box_at(box + direction) != null):
-		if (get_box_at(box + direction).get_meta("immovable")):
-			box.set_meta("grid_pos", new_box_pos)
-			animate_move(box, new_box_pos)
-			return true
-
 	if tile == 'W' or tile == 's':
 		box.set_meta("grid_pos", new_box_pos)
 		box.set_meta("immovable", true)
