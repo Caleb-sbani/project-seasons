@@ -271,8 +271,9 @@ func spawn_box(grid_pos: Vector2i):
 	box.position = Vector2(grid_pos) * TILE_SIZE
 	box.centered = false
 	box.set_meta("grid_pos", grid_pos)
+	box.set_meta("immovable", false)
 	box.name = "Box"
-	box.z_index = 5  # renders boxes above tiles but below player
+	box.z_index = 6  # renders boxes above tiles but below player
 	boxes.append(box)
 	add_child(box)
 
@@ -308,35 +309,45 @@ func _unhandled_input(event):
 
 func try_move_player(direction: Vector2i):
 	var new_pos = player_pos + direction
-	
-	# is a box in the way
 	var box_at_pos = get_box_at(new_pos)
-	if box_at_pos:
-		# if box is immovable (on water/sinkhole), player can walk over it
-		if box_at_pos.get_meta("immovable", false):
-			move_player(new_pos)
-			return
-		
-		# else push the box
-		if try_push_box(box_at_pos, direction):
-			move_player(new_pos)
-		return
-	
 	# check what type of tile is at new position
-	if can_move_to(new_pos):
-		move_player(new_pos)
-		
-		# Fall wind
-		if season == "Fall" and direction == wind_direction:
+	if (get_tile_at(new_pos) != 'w'):
+		if season == "Fall" and direction == wind_direction and box_at_pos == null:
 			var boost_pos = new_pos + wind_direction
 			# check if boost position has a box (not sure how we want to handle this yet)
 			var boost_box = get_box_at(boost_pos)
+			var before_box = get_box_at(new_pos)
+			if before_box:
+				if (before_box.get_meta("immovable")):
+					move_player(new_pos)
+					return
+				
 			if boost_box:
 				if boost_box.get_meta("immovable", false):
-					move_player(boost_pos, false)  # don't increment steps twice
+					move_player(boost_pos, true)
+					return
 			elif can_move_to(boost_pos):
-				move_player(boost_pos, false)  # don't increment steps twice
-
+				move_player(boost_pos, true)
+				return
+			if (get_tile_at(boost_pos) == 'w'):
+				if (can_move_to(new_pos)):
+					move_player(new_pos)
+		else:
+			
+			if box_at_pos:
+				# if box is immovable (on water/sinkhole), player can walk over it
+				if box_at_pos.get_meta("immovable"):
+					move_player(new_pos)
+					return
+		
+				# else push the box
+				if try_push_box(box_at_pos, direction):
+					move_player(new_pos)
+					return
+			elif (can_move_to(new_pos)):
+				move_player(new_pos)
+	
+	
 func can_move_to(grid_pos: Vector2i) -> bool:
 	var tile = get_tile_at(grid_pos)
 	
@@ -401,9 +412,18 @@ func get_tile_at(grid_pos: Vector2i) -> String:
 	return 'g'
 
 func get_box_at(grid_pos: Vector2i):
+	var tempboxes = []
 	for box in boxes:
 		if box.get_meta("grid_pos") == grid_pos:
-			return box
+			tempboxes.append(box)
+	print(tempboxes.size())
+	for b in tempboxes:
+		if b.get_meta("immovable") == true:
+			continue
+		else:
+			return b
+	if tempboxes.size() == 1:
+		return tempboxes[0]
 	return null
 
 func try_push_box(box, direction: Vector2i) -> bool:
@@ -412,10 +432,16 @@ func try_push_box(box, direction: Vector2i) -> bool:
 	
 	# can box be pushed there
 	var tile = get_tile_at(new_box_pos)
+	
+	if (get_box_at(box_pos + direction) != null):
+		box.set_meta("grid_pos", new_box_pos)
+		animate_move(box, new_box_pos)
+		return true
 
 	if tile == 'W' or tile == 's':
 		box.set_meta("grid_pos", new_box_pos)
 		box.set_meta("immovable", true)
+		box.z_index = 4 # render below moveable boxes
 		animate_move(box, new_box_pos)
 		return true
 	
@@ -553,6 +579,12 @@ func switch_season():
 			if (sinkholetracker[i] == 1):
 				sinkholes[i].texture = load("res://assets/sprites/sinkhole.png")
 				sinkholetracker[i] = 0
+				for b in boxes:
+					if (get_tile_at(b.get_meta("grid_pos")) == 's'):
+						b.set_meta("immovable", true)
+						b.z_index = 4
+				if (get_tile_at(player_pos) == 's'):
+					player_death("You fell into a sinkhole!")
 			elif (sinkholetracker[i] == 2):
 				sinkholes[i].texture = load("res://assets/sprites/sinkhole_warning.png")
 				sinkholetracker[i] = 1
