@@ -1,6 +1,10 @@
 [gd_scene format=3 uid="uid://dnh1xn6y013l2"]
 
-[ext_resource type="Script" uid="uid://blbnd6owhrch8" path="res://scripts/levels.gd" id="1_48rmr"]
+[ext_resource type="Script" uid="uid://demr2ffc6b8cg" path="res://scripts/levels.gd" id="1_48rmr"]
+[ext_resource type="Script" uid="uid://d28dvoywyyemq" path="res://scripts/GlobalLevel.gd" id="2_hk6qi"]
 
 [node name="Level1" type="Node2D" unique_id=1961717027]
 script = ExtResource("1_48rmr")
+
+[node name="globalvar" type="Node2D" parent="." unique_id=967310880]
+script = ExtResource("2_hk6qi")

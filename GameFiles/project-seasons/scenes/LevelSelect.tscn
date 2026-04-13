@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b6v8hjfe6047k"]
 
 [ext_resource type="Script" uid="uid://c2vq3yemw13sf" path="res://scripts/level_select.gd" id="1_dbyaq"]
-[ext_resource type="Script" path="res://scripts/Next_level.gd" id="2_egmj1"]
+[ext_resource type="Script" uid="uid://ic7f5yvouyji" path="res://scripts/Next_level.gd" id="2_egmj1"]
 
 [sub_resource type="GDScript" id="GDScript_dbyaq"]
 script/source = "extends Button
@@ -26,17 +26,17 @@ offset_bottom = 739.0
 color = Color(0.21217975, 0.23586228, 0.060879074, 1)
 
 [node name="Level1" type="Button" parent="." unique_id=1708844162]
-offset_left = 200.0
-offset_top = 97.0
-offset_right = 285.0
-offset_bottom = 128.0
+offset_left = 170.0
+offset_top = 93.0
+offset_right = 268.7097
+offset_bottom = 129.0
 text = "Level One"
 script = SubResource("GDScript_dbyaq")
 
 [node name="Tutorial" type="Button" parent="." unique_id=626727864]
-offset_left = 94.0
+offset_left = 93.0
 offset_top = 93.0
-offset_right = 163.0
+offset_right = 162.0
 offset_bottom = 129.0
 text = "Tutorial"
 
@@ -46,3 +46,43 @@ offset_top = 16.0
 offset_right = 1114.0
 offset_bottom = 81.0
 script = ExtResource("2_egmj1")
+
+[node name="Level2" type="Button" parent="." unique_id=1791447200]
+offset_left = 277.0
+offset_top = 93.0
+offset_right = 375.7097
+offset_bottom = 129.0
+text = "Level Two"
+script = SubResource("GDScript_dbyaq")
+
+[node name="Level3" type="Button" parent="." unique_id=802032057]
+offset_left = 384.0
+offset_top = 93.0
+offset_right = 482.7097
+offset_bottom = 129.0
+text = "Level Three"
+script = SubResource("GDScript_dbyaq")
+
+[node name="Level4" type="Button" parent="." unique_id=1281503812]
+offset_left = 491.0
+offset_top = 93.0
+offset_right = 589.7097
+offset_bottom = 129.0
+text = "Level Four"
+script = SubResource("GDScript_dbyaq")
+
+[node name="Level5" type="Button" parent="." unique_id=577933339]
+offset_left = 598.0
+offset_top = 93.0
+offset_right = 696.7097
+offset_bottom = 129.0
+text = "Level Five"
+script = SubResource("GDScript_dbyaq")
+
+[node name="Level6" type="Button" parent="." unique_id=299453914]
+offset_left = 705.0
+offset_top = 93.0
+offset_right = 803.7097
+offset_bottom = 129.0
+text = "Level Six"
+script = SubResource("GDScript_dbyaq")

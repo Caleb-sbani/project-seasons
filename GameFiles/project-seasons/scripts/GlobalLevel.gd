@@ -1,5 +1,5 @@
 extends Node2D
 
-var level = 0;
+var level = 1;
 var completedLevel = 0;
-var levels = 2;
+var levels = 6;

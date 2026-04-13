@@ -19,8 +19,10 @@ var player_sprite = null
 var tutorial_panel = null
 var boxes = []
 var waters = []
+var waterspos = []
 var sinkholes = []
 var sinkholetracker = []
+var sinkholespos = []
 var bees = []
 var beehives = []
 var beehivespos = []
@@ -135,16 +137,20 @@ func load_stage(stage_num: int):
 	
 	match stage_num:
 		1:
-			season = "Fall" #call switch season at the end of setup so season gets set up correctly
+			season = "Winter" 
+			#call switch season at the end of setup so season gets set up correctly
 			load_level_one()
 			switch_season()
 		2:
 			#temporary
-			season = "Fall" #call switch season at the end of setup so season gets set up correctly
+			season = "Fall" 
+			#call switch season at the end of setup so season gets set up correctly
 			load_level_two()
 			switch_season()
-#		3:
-#			load_stage_3()
+		3:
+			season = "Summer"
+			load_level_three()
+			switch_season()
 #		4:
 #			load_stage_4()
 #		5:
@@ -164,6 +170,7 @@ func clear_level():
 	
 	boxes.clear()
 	waters.clear()
+	waterspos.clear()
 	sinkholes.clear()
 	sinkholetracker.clear()
 	bees.clear()
@@ -178,13 +185,13 @@ func create_map(layout: Array):
 	# adds the outer walls around the lvls
 	# top & bottom
 	for x in range(cols + 2):
-		create_tile(Vector2i(x, 0), 'w')
-		create_tile(Vector2i(x, rows + 1), 'w')
+		create_tile(Vector2i(x, 0), 'E')
+		create_tile(Vector2i(x, rows + 1), 'E')
 	
 	# left & right
 	for y in range(rows + 2):
-		create_tile(Vector2i(0, y), 'w')
-		create_tile(Vector2i(cols + 1, y), 'w')
+		create_tile(Vector2i(0, y), 'E')
+		create_tile(Vector2i(cols + 1, y), 'E')
 	
 	# creates the lvl content
 	for y in range(rows):
@@ -207,8 +214,6 @@ func create_map(layout: Array):
 	var camera = get_viewport().get_camera_2d()
 	#camera hints: moving right with camera is +++x
 	# moving down with camera is ---y
-	print(cols)
-	print(rows)
 	camera.position = Vector2(32 * cols + 64, rows* 32.0 + 64)/2
 	#camera.zoom = Vector2(2, 2)
 	var t = min(12.0/cols, 6.0/rows)
@@ -228,20 +233,25 @@ func create_tile(grid_pos: Vector2i, tile_type: String):
 		'W':
 			sprite.texture = load("res://assets/sprites/water.png")
 			waters.append(sprite)
+			waterspos.append(grid_pos)
 		'i':
 			sprite.texture = load("res://assets/sprites/ice.png")
 			waters.append(sprite)
+			waterspos.append(grid_pos)
 		's':
 			sprite.texture = load("res://assets/sprites/sinkhole.png")
 			sinkholes.append(sprite)
+			sinkholespos.append(grid_pos)
 			sinkholetracker.append(0)
 		'H': 
 			sprite.texture = load("res://assets/sprites/sinkhole_warning.png")
 			sinkholes.append(sprite)
+			sinkholespos.append(grid_pos)
 			sinkholetracker.append(1)
 		'h': 
 			sprite.texture = load("res://assets/sprites/sinkhole_start.png")
 			sinkholes.append(sprite)
+			sinkholespos.append(grid_pos)
 			sinkholetracker.append(2)
 		'b':
 			sprite.texture = load("res://assets/sprites/beehive.png")
@@ -252,6 +262,8 @@ func create_tile(grid_pos: Vector2i, tile_type: String):
 			bees.append(sprite)
 		'G':
 			sprite.texture = load("res://assets/sprites/goal.png")
+		'E':
+			sprite.texture = load("res://assets/sprites/outer_wall.png")
 	
 	add_child(sprite)
 
@@ -302,15 +314,26 @@ func _unhandled_input(event):
 				$UI.hide()
 			else:
 				$UI.show()
-	
+		elif event.pressed and event.keycode == KEY_R:
+			player_death("Restarting")
+		elif event.pressed and event.keycode == KEY_W:
+			direction = Vector2i(0, -1)
+		elif event.pressed and event.keycode == KEY_A:
+			direction = Vector2i(-1, 0)
+		elif event.pressed and event.keycode == KEY_S:
+			direction = Vector2i(0, 1)
+		elif event.pressed and event.keycode == KEY_D:
+			direction = Vector2i(1, 0)
+
 	if direction != Vector2i.ZERO:
 		try_move_player(direction)
 
 func try_move_player(direction: Vector2i):
+	$UI/RightPanel/TextContainer/TutorialText.hide()
 	var new_pos = player_pos + direction
 	var box_at_pos = get_box_at(new_pos)
 	# check what type of tile is at new position
-	
+	if (get_tile_at(new_pos) == 'E'): return
 	if ((get_tile_at(new_pos) != 'w') or (has_honey and get_tile_at(new_pos) == 'w')):
 		if season == "Fall" and direction == wind_direction:
 			var boost_pos = new_pos + wind_direction
@@ -320,7 +343,7 @@ func try_move_player(direction: Vector2i):
 				if (box_at_pos.get_meta("immovable") == false):
 					if try_push_box(box_at_pos, direction):
 						move_player(new_pos)
-						return
+					return
 			else:
 				var tileat = get_tile_at(new_pos)
 				match tileat:
@@ -341,7 +364,7 @@ func try_move_player(direction: Vector2i):
 			elif can_move_to(boost_pos):
 				move_player(boost_pos, true)
 				return
-			if (get_tile_at(boost_pos) == 'w'):
+			if (get_tile_at(boost_pos) == 'w' or get_tile_at(boost_pos) == 'E'):
 				if (can_move_to(new_pos)):
 					move_player(new_pos)
 		elif (season != "Fall" or direction != wind_direction):
@@ -359,7 +382,7 @@ func try_move_player(direction: Vector2i):
 	
 func can_move_to(grid_pos: Vector2i) -> bool:
 	var tile = get_tile_at(grid_pos)
-	
+	if tile == 'E': return false
 	# can't walk through walls
 	if tile == 'w':
 		if has_honey:
@@ -399,7 +422,9 @@ func get_tile_at(grid_pos: Vector2i) -> String:
 			if child.position.distance_to(world_pos) < 5:
 				# determine type
 				var texture_path = child.texture.resource_path
-				if "wall" in texture_path:
+				if "outer_wall" in texture_path:
+					return 'E'
+				elif "wall" in texture_path:
 					return 'w'
 				elif "water" in texture_path:
 					return 'W'
@@ -416,7 +441,7 @@ func get_tile_at(grid_pos: Vector2i) -> String:
 				elif "beehive" in texture_path:
 					return 'b'
 				elif "goal" in texture_path:
-					return 'G'
+					return 'G'	
 	
 	return 'g'
 
@@ -433,6 +458,17 @@ func get_box_at(grid_pos: Vector2i):
 	if tempboxes.size() == 1:
 		return tempboxes[0]
 	return null
+	
+	
+func get_immovable_box_at(grid_pos: Vector2i):
+	var tempboxes = []
+	for box in boxes:
+		if box.get_meta("grid_pos") == grid_pos:
+			tempboxes.append(box)
+	for b in tempboxes:
+		if b.get_meta("immovable") == true:
+			return b
+	return null
 
 func try_push_box(box, direction: Vector2i) -> bool:
 	var box_pos = box.get_meta("grid_pos")
@@ -441,7 +477,7 @@ func try_push_box(box, direction: Vector2i) -> bool:
 	# can box be pushed there
 	var tile = get_tile_at(new_box_pos)
 	
-	if (get_box_at(box_pos + direction) != null):
+	if (get_box_at(new_box_pos) != null):
 		box.set_meta("grid_pos", new_box_pos)
 		animate_move(box, new_box_pos)
 		return true
@@ -454,7 +490,7 @@ func try_push_box(box, direction: Vector2i) -> bool:
 		return true
 	
 	# can't push if there's a wall or another box
-	if tile == 'w' or get_box_at(new_box_pos) or tile == 'b':
+	if tile == 'w' or get_box_at(new_box_pos) or tile == 'b' or tile == 'E':
 		return false
 	
 	# can't push immovable boxes
@@ -500,6 +536,10 @@ func animate_move(sprite: Sprite2D, grid_pos: Vector2i):
 	tween.tween_property(sprite, "position", target_pos, 0.2)
 
 func player_death(death_message: String):
+	$UI/RightPanel/TextContainer/TutorialText.show()
+	$UI/RightPanel/TextContainer/TutorialText.text = death_message
+	$UI/RightPanel/TextContainer/TutorialText.add_theme_font_size_override("font_size", 24)
+	$UI/RightPanel/TextContainer/TutorialText.add_theme_color_override("font_color", Color(1, 0, 0))
 	# temporarily disable input
 	set_process_unhandled_input(false)
 	
@@ -520,9 +560,9 @@ func player_death(death_message: String):
 	set_process_unhandled_input(true)
 
 func on_goal_reached():
+	GlobalLevel.completedLevel = current_stage
 	if current_stage == total_stages:
 		await fade_to_black()
-		await get_tree().create_timer(4).timeout
 		# go to level select (not yet implemented)
 		get_tree().change_scene_to_file("res://scenes/LevelSelect.tscn")
 	else:
@@ -558,7 +598,17 @@ func fade_from_black():
 	fade.queue_free()
 	
 func switch_season():
-	season = seasons_array[((step_counter/change_frequency)%4)]
+	var next = false
+	var prev = season
+	if step_counter != 0:
+		for i in seasons_array:
+			if next:
+				season = i
+				break
+			if season == i:
+				next = true
+		if prev == season:
+			season = "Winter"
 	if season == "Winter":
 		#do winter stuff
 		$UI/RightPanel/HUD/WindDirection.text = "Wind: ×"
@@ -568,6 +618,9 @@ func switch_season():
 		#do spring stuff
 		for tile in waters:
 			tile.texture = load("res://assets/sprites/water.png")
+		for t in waterspos:
+			if (get_box_at(t)):
+				get_box_at(t).set_meta("immovable", true)
 		for i in beehives.size():
 			if (get_tile_at(beehivespos[i] + Vector2i(0, 1)) == 'g'):
 				create_tile(beehivespos[i] + Vector2i(0, 1), 'B')
@@ -579,23 +632,25 @@ func switch_season():
 				create_tile(beehivespos[i] + Vector2i(1, 0), 'B')
 		if (get_tile_at(player_pos) == 'B'):
 			player_death("You got stung!")
-		if (get_tile_at(player_pos) == 'W'):
+		if (get_tile_at(player_pos) == 'W'  and get_immovable_box_at(player_pos) == null):
 			player_death("You drowned!")
 	elif season == "Summer":
 		#do summer stuff
 		for i in sinkholes.size():
-			if (sinkholetracker[i] == 1):
-				sinkholes[i].texture = load("res://assets/sprites/sinkhole.png")
-				sinkholetracker[i] = 0
-				for b in boxes:
-					if (get_tile_at(b.get_meta("grid_pos")) == 's'):
-						b.set_meta("immovable", true)
-						b.z_index = 4
-				if (get_tile_at(player_pos) == 's'):
-					player_death("You fell into a sinkhole!")
-			elif (sinkholetracker[i] == 2):
-				sinkholes[i].texture = load("res://assets/sprites/sinkhole_warning.png")
-				sinkholetracker[i] = 1
+			if step_counter != 0:
+				if (sinkholetracker[i] == 1):
+					sinkholes[i].texture = load("res://assets/sprites/sinkhole.png")
+					sinkholetracker[i] = 0
+					if (get_immovable_box_at(sinkholespos[i]) == null):
+						for b in boxes:
+							if (b.get_meta("grid_pos") == sinkholespos[i]):
+								b.set_meta("immovable", true)
+								b.z_index = 4
+					if (get_tile_at(player_pos) == 's' and get_immovable_box_at(player_pos) == null):
+						player_death("You fell into a sinkhole!")
+				elif (sinkholetracker[i] == 2):
+					sinkholes[i].texture = load("res://assets/sprites/sinkhole_warning.png")
+					sinkholetracker[i] = 1
 		for bee in bees:
 			bee.queue_free()
 		bees.clear()
@@ -610,6 +665,8 @@ func switch_season():
 			$UI/RightPanel/HUD/WindDirection.text = "Wind: ↑"
 		if (wind_direction == Vector2i(0, 1)):
 			$UI/RightPanel/HUD/WindDirection.text = "Wind: ↓"
+	if season != "Fall":
+		$UI/RightPanel/HUD/WindDirection.text = "Wind: ×"
 
 #LEVEL BUILDING KEY:
 # p = player
@@ -641,12 +698,22 @@ func load_level_one():
 func load_level_two():
 	wind_direction = Vector2i(1, 0)
 	var layout = [
-		"gggggggggggg",
-		"gggggggggggg",
-		"gggggggggggg",
-		"gggggggggggg",
-		"gggpgggggggg", #temp
-		"gggggggggggG"
+		"pgggggggg",
+		"ggggggggg",
+		"gggggggGg",
+		"ggggggggg",
+		"ggggggggg"
 	]
 	create_map(layout)
 	
+func load_level_three():
+	wind_direction = Vector2i(1, 0)
+	var layout = [
+		"ggmWWgggggswwbWggg",
+		"hwhwswwwwwmwsgWggh",
+		"pgbggsswWmHgbswhwG",
+		"gwgwgsswmWgHwwwwgW",
+		"gmsmgwswbWwgsgghgg",
+		"gggggswwWwsgggwsss"
+	]
+	create_map(layout)
