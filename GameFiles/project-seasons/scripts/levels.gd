@@ -134,6 +134,7 @@ func load_stage(stage_num: int):
 	step_counter = 0
 	player_locked = false
 	has_honey = false
+	#player_sprite.texture = load("res://assets/sprites/snail.png")
 	
 	match stage_num:
 		1:
@@ -315,7 +316,7 @@ func _unhandled_input(event):
 			else:
 				$UI.show()
 		elif event.pressed and event.keycode == KEY_R:
-			player_death("Restarting")
+			player_death("Restarting", player_pos)
 		elif event.pressed and event.keycode == KEY_W:
 			direction = Vector2i(0, -1)
 		elif event.pressed and event.keycode == KEY_A:
@@ -349,10 +350,11 @@ func try_move_player(direction: Vector2i):
 				match tileat:
 					'B':
 						if (step_counter%4 != 3):
-							player_death("Stung by a bee!")
+							player_death("Stung by a bee!", new_pos)
 						return
 					'w':
 						has_honey = false
+						player_sprite.texture = load("res://assets/sprites/snail.png")
 			if boost_box:
 				if (boost_box.get_meta("immovable")):
 					move_player(boost_pos, true)
@@ -360,6 +362,9 @@ func try_move_player(direction: Vector2i):
 				else:
 					if (try_push_box(boost_box, direction)):
 						move_player(boost_pos)
+						return
+					elif can_move_to(new_pos):
+						move_player(new_pos)
 						return
 			elif can_move_to(boost_pos):
 				move_player(boost_pos, true)
@@ -387,6 +392,7 @@ func can_move_to(grid_pos: Vector2i) -> bool:
 	if tile == 'w':
 		if has_honey:
 			has_honey = false
+			player_sprite.texture = load("res://assets/sprites/snail.png")
 			return true
 		return false
 	
@@ -394,21 +400,22 @@ func can_move_to(grid_pos: Vector2i) -> bool:
 	if (tile == 'W' and season == "Fall" and step_counter%4 == 3):
 		return true
 	if (tile == 'W' and season != "Winter"):
-		player_death("You drowned!")
+		player_death("You drowned!", grid_pos)
 		return false
 	
 	# bees sting you to death
 	if tile == 'B' and season == "Spring" and step_counter%4 != 3:
-		player_death("Ouch! Stung by a bee!")
+		player_death("Ouch! Stung by a bee!", grid_pos)
 		return false
 	
 	# beehive gives honey
 	if tile == 'b':
 		has_honey = true
+		player_sprite.texture = load("res://assets/sprites/snail_honey.png")
 	
 	# sinkholes kill you
 	if tile == 's':
-		player_death("You fell into a sinkhole!")
+		player_death("You fell into a sinkhole!", grid_pos)
 		return false
 	
 	return true
@@ -485,6 +492,7 @@ func try_push_box(box, direction: Vector2i) -> bool:
 	if tile == 'W' or tile == 's':
 		box.set_meta("grid_pos", new_box_pos)
 		box.set_meta("immovable", true)
+		box.texture = load("res://assets/sprites/immovable_box.png")
 		box.z_index = 4 # render below moveable boxes
 		animate_move(box, new_box_pos)
 		return true
@@ -535,7 +543,7 @@ func animate_move(sprite: Sprite2D, grid_pos: Vector2i):
 	var tween = create_tween()
 	tween.tween_property(sprite, "position", target_pos, 0.2)
 
-func player_death(death_message: String):
+func player_death(death_message: String, death_pos: Vector2i):
 	$UI/RightPanel/TextContainer/TutorialText.show()
 	$UI/RightPanel/TextContainer/TutorialText.text = death_message
 	$UI/RightPanel/TextContainer/TutorialText.add_theme_font_size_override("font_size", 24)
@@ -545,13 +553,18 @@ func player_death(death_message: String):
 	
 	# flash player red for death
 	if player_sprite:
+		var target_pos = Vector2(death_pos) * TILE_SIZE
+		if (death_pos != player_pos):
+			var tween = create_tween()
+			tween.tween_property(player_sprite, "position", target_pos, 0.2)
 		var original_modulate = player_sprite.modulate
 		player_sprite.modulate = Color(1, 0, 0)  # Red
 		await get_tree().create_timer(0.5).timeout
 		player_sprite.modulate = original_modulate
+
 	
 	# wait a moment
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(0.5).timeout
 	
 	# reload current stage
 	load_stage(current_stage)
@@ -621,6 +634,7 @@ func switch_season():
 		for t in waterspos:
 			if (get_box_at(t)):
 				get_box_at(t).set_meta("immovable", true)
+				get_box_at(t).texture = load("res://assets/sprites/immovable_box.png")
 		for i in beehives.size():
 			if (get_tile_at(beehivespos[i] + Vector2i(0, 1)) == 'g'):
 				create_tile(beehivespos[i] + Vector2i(0, 1), 'B')
@@ -631,9 +645,9 @@ func switch_season():
 			if (get_tile_at(beehivespos[i] + Vector2i(1, 0)) == 'g'):
 				create_tile(beehivespos[i] + Vector2i(1, 0), 'B')
 		if (get_tile_at(player_pos) == 'B'):
-			player_death("You got stung!")
+			player_death("You got stung!", player_pos)
 		if (get_tile_at(player_pos) == 'W'  and get_immovable_box_at(player_pos) == null):
-			player_death("You drowned!")
+			player_death("You drowned!", player_pos)
 	elif season == "Summer":
 		#do summer stuff
 		for i in sinkholes.size():
@@ -645,9 +659,10 @@ func switch_season():
 						for b in boxes:
 							if (b.get_meta("grid_pos") == sinkholespos[i]):
 								b.set_meta("immovable", true)
+								b.texture = load("res://assets/sprites/immovable_box.png")
 								b.z_index = 4
 					if (get_tile_at(player_pos) == 's' and get_immovable_box_at(player_pos) == null):
-						player_death("You fell into a sinkhole!")
+						player_death("You fell into a sinkhole!", player_pos)
 				elif (sinkholetracker[i] == 2):
 					sinkholes[i].texture = load("res://assets/sprites/sinkhole_warning.png")
 					sinkholetracker[i] = 1
