@@ -712,12 +712,13 @@ func load_level_one():
 
 func load_level_two():
 	wind_direction = Vector2i(1, 0)
+	season = "Summer"
 	var layout = [
-		"pgggggggg",
-		"ggggggggg",
-		"gggggggGg",
-		"ggggggggg",
-		"ggggggggg"
+		"bgsssgggggg",
+		"ggsssggggbg",
+		"pgsWwHgwwww",
+		"ggsssggmwww",
+		"ggsssgggssG"
 	]
 	create_map(layout)
 	
