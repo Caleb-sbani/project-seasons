@@ -1,9 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://c2hu76hl7vkdp"]
+[gd_scene format=3 uid="uid://c2hu76hl7vkdp"]
 
-[ext_resource type="Script" uid="uid://74jjeromnnlj" path="res://scripts/TitleScreen.gd" id="1_ak2if"]
-[ext_resource type="Texture2D" uid="uid://q6tuhi1jq48r" path="res://assets/sprites/snail.png" id="2_ig5kc"]
+[ext_resource type="Script" uid="uid://ddc0n4ke8gkk3" path="res://scripts/TitleScreen.gd" id="1_ak2if"]
+[ext_resource type="Texture2D" uid="uid://lwfg86yhdss4" path="res://assets/sprites/snail.png" id="2_ig5kc"]
 
-[node name="Title Screen" type="Control"]
+[node name="Title Screen" type="Control" unique_id=1598417375]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,27 +12,27 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ak2if")
 
-[node name="WinterCorner" type="ColorRect" parent="."]
+[node name="WinterCorner" type="ColorRect" parent="." unique_id=1739854471]
 layout_mode = 0
 offset_right = 579.0
 offset_bottom = 324.0
 color = Color(0.2901961, 0.5019608, 0.8862745, 1)
 
-[node name="SpringCorner" type="ColorRect" parent="."]
+[node name="SpringCorner" type="ColorRect" parent="." unique_id=399109783]
 layout_mode = 0
 offset_left = 579.0
 offset_right = 1158.0
 offset_bottom = 324.0
 color = Color(0.95686275, 0.8156863, 0.24705882, 1)
 
-[node name="SummerCorner" type="ColorRect" parent="."]
+[node name="SummerCorner" type="ColorRect" parent="." unique_id=408256446]
 layout_mode = 0
 offset_top = 324.0
 offset_right = 579.0
 offset_bottom = 648.0
 color = Color(0.90588236, 0.29803923, 0.23529412, 1)
 
-[node name="FallCorner" type="ColorRect" parent="."]
+[node name="FallCorner" type="ColorRect" parent="." unique_id=821068083]
 layout_mode = 0
 offset_left = 579.0
 offset_top = 324.0
@@ -40,22 +40,51 @@ offset_right = 1158.0
 offset_bottom = 648.0
 color = Color(0.54509807, 0.27058825, 0.07450981, 1)
 
-[node name="Snail" type="Sprite2D" parent="."]
-position = Vector2(579, 324)
+[node name="Snail" type="Sprite2D" parent="." unique_id=590860316]
+position = Vector2(581, 156)
 scale = Vector2(2, 2)
 texture = ExtResource("2_ig5kc")
 
-[node name="StartButton" type="Button" parent="."]
+[node name="StartButton" type="Button" parent="." unique_id=1594490284]
 layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -20.5
-offset_top = -31.0
-offset_right = 20.5
+anchors_preset = -1
+anchor_left = 0.41000003
+anchor_top = 0.432
+anchor_right = 0.59000003
+anchor_bottom = 0.45700002
+offset_left = -24.320038
+offset_top = -23.936005
+offset_right = 24.319946
+offset_bottom = 27.863983
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_font_sizes/font_size = 32
-text = "Play"
+text = "Level Select"
+
+[node name="SettingsButton" type="Button" parent="." unique_id=841956044]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.41000003
+anchor_top = 0.58000004
+anchor_right = 0.59000003
+anchor_bottom = 0.605
+offset_left = -24.320038
+offset_top = -23.840027
+offset_right = 24.319946
+offset_bottom = 23.959991
+theme_override_font_sizes/font_size = 32
+text = "Settings"
+
+[node name="TutorialButton" type="Button" parent="." unique_id=1619779582]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.41000003
+anchor_top = 0.72800004
+anchor_right = 0.59000003
+anchor_bottom = 0.753
+offset_left = -24.320038
+offset_top = -23.744019
+offset_right = 24.319946
+offset_bottom = 24.056
+theme_override_font_sizes/font_size = 32
+text = "Tutorial"
