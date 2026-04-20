@@ -22,7 +22,7 @@ var player_sprite = null
 var tutorial_panel = null
 var boxes = []
 
-var settings_scene = preload("res://SettingsMenu.tscn")
+var settings_scene = preload("res://scenes/SettingsMenu.tscn")
 
 func _ready():
 	setup_ui()
