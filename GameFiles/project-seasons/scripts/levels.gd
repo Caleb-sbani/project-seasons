@@ -391,8 +391,8 @@ func try_move_player(direction: Vector2i):
 							player_death("Stung by a bee!", new_pos)
 						return
 					'w':
-						has_honey = false
-						player_sprite.texture = load("res://assets/sprites/snail.png")
+						if(can_move_to(new_pos)):
+							move_player(new_pos)
 			if boost_box:
 				if (boost_box.get_meta("immovable")):
 					move_player(boost_pos, true)
