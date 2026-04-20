@@ -15,7 +15,7 @@ func _on_closeSetting_button_pressed():
 	queue_free()
 
 func _on_homeScreen_button_pressed():
-	get_tree().change_scene_to_file("res://title_screen.tscn")
+	get_tree().change_scene_to_file("res://scenes/title_screen.tscn")
 
 func _on_quit_button_pressed():
 	get_tree().quit()
