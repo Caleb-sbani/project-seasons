@@ -1,6 +1,6 @@
 extends Control
 
-var settings_scene = preload("res://SettingsMenu.tscn")
+var settings_scene = preload("res://scenes/SettingsMenu.tscn")
 
 var input_locked = false
 
@@ -31,4 +31,4 @@ func _on_settings_closed():
 	input_locked = false
 
 func _on_tutorial_button_pressed():
-	get_tree().change_scene_to_file("res://tutorial_lvl.tscn")
+	get_tree().change_scene_to_file("res://scenes/tutorial_lvl.tscn")
