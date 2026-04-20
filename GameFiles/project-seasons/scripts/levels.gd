@@ -1,5 +1,8 @@
 extends Node2D
 
+var settings_scene = preload("res://scenes/SettingsMenu.tscn")
+var input_locked = false
+
 const TILE_SIZE = 32  # our sprites are 32x32
 var seasons_array = ["Winter", "Spring", "Summer", "Fall"]
 
@@ -79,6 +82,23 @@ func setup_ui():
 	hud.position = Vector2(20, 320)
 	right_panel.add_child(hud)
 	
+	var settings_button = Button.new()
+	settings_button.name = "SettingsButton"
+	settings_button.text = "⚙"
+	settings_button.tooltip_text = "Settings"
+	settings_button.custom_minimum_size = Vector2(40, 40)
+
+	# Just position it manually inside the 400px panel
+	settings_button.position = Vector2(340, 10)
+
+	settings_button.pressed.connect(_on_settings_pressed)
+
+	right_panel.add_child(settings_button)
+
+	settings_button.pressed.connect(_on_settings_pressed)
+
+	right_panel.add_child(settings_button)
+	
 	# step counter
 	var step_label = Label.new()
 	step_label.name = "StepCounter"
@@ -126,6 +146,19 @@ func setup_ui():
 	
 	tutorial_panel = text_container
 
+func _on_settings_pressed():
+	if input_locked:
+		return
+		
+	input_locked = true
+	
+	var settings = settings_scene.instantiate()
+	settings.tree_exited.connect(_on_settings_closed)
+	$UI.add_child(settings)
+
+func _on_settings_closed():
+	input_locked = false
+
 func load_stage(stage_num: int):
 	# clears the previous level
 	clear_level()
@@ -152,8 +185,10 @@ func load_stage(stage_num: int):
 			season = "Summer"
 			load_level_three()
 			switch_season()
-#		4:
-#			load_stage_4()
+		4:
+			season = "Fall"
+			load_level_four()
+			switch_season()
 #		5:
 #			load_stage_5()
 #		6:
@@ -296,6 +331,9 @@ func update_hud():
 	$UI/RightPanel/HUD/ChangeFrequency.text = "Season changes in: %d" % steps_until_change
 
 func _unhandled_input(event):
+	if input_locked:
+		return
+	
 	var direction = Vector2i.ZERO
 	
 	if player_locked == true:
@@ -731,5 +769,16 @@ func load_level_three():
 		"gwgwgsswmWgHwwwwgW",
 		"gmsmgwswbWwgsgghgg",
 		"gggggswwWwsgggwsss"
+	]
+	create_map(layout)
+	
+func load_level_four():
+	wind_direction = Vector2i(0, 1)  # wind blows downward for Fall
+	var layout = [
+		"pggsggggwgggb",
+		"ggggggmmwgggw",
+		"ssssssWWwgwwh",
+		"ggggwwWWggwhh",
+		"bbbbgWgggwhhG"
 	]
 	create_map(layout)
