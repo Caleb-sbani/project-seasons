@@ -94,10 +94,6 @@ func setup_ui():
 	settings_button.pressed.connect(_on_settings_pressed)
 
 	right_panel.add_child(settings_button)
-
-	settings_button.pressed.connect(_on_settings_pressed)
-
-	right_panel.add_child(settings_button)
 	
 	# step counter
 	var step_label = Label.new()
@@ -363,6 +359,8 @@ func _unhandled_input(event):
 			direction = Vector2i(0, 1)
 		elif event.pressed and event.keycode == KEY_D:
 			direction = Vector2i(1, 0)
+		elif event.pressed and event.keycode == KEY_ESCAPE:
+			_on_settings_pressed()
 
 	if direction != Vector2i.ZERO:
 		try_move_player(direction)
@@ -372,7 +370,7 @@ func try_move_player(direction: Vector2i):
 	var new_pos = player_pos + direction
 	var box_at_pos = get_box_at(new_pos)
 	# check what type of tile is at new position
-	if (get_tile_at(new_pos) == 'E'): return
+	if (get_tile_at(new_pos) == 'E' or player_locked): return
 	if ((get_tile_at(new_pos) != 'w') or (has_honey and get_tile_at(new_pos) == 'w')):
 		if season == "Fall" and direction == wind_direction:
 			var boost_pos = new_pos + wind_direction
@@ -630,7 +628,7 @@ func fade_to_black():
 	$UI.add_child(fade)
 	
 	var tween = create_tween()
-	tween.tween_property(fade, "color", Color(0, 0, 0, 1), 1.0)
+	tween.tween_property(fade, "color", Color(0, 0, 0, 1), 0.5)
 	await tween.finished
 	
 	await get_tree().create_timer(1).timeout
@@ -643,7 +641,7 @@ func fade_from_black():
 	$UI.add_child(fade)
 	
 	var tween = create_tween()
-	tween.tween_property(fade, "color", Color(0, 0, 0, 0), 1.0)
+	tween.tween_property(fade, "color", Color(0, 0, 0, 0), 0.5)
 	await tween.finished
 	
 	fade.queue_free()
