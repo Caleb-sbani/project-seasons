@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://ct6rpg522ftq"]
 
-[ext_resource type="Script" uid="uid://cxvdtlwty82ih" path="res://scripts/settings_menu.gd" id="1_svoao"]
+[ext_resource type="Script" uid="uid://doondwaold0t" path="res://scripts/settings_menu.gd" id="1_svoao"]
 
 [node name="Control" type="Control" unique_id=235169812]
 layout_mode = 3
@@ -52,16 +52,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Settings"
 
-[node name="Audio" type="Button" parent="Panel/VBoxContainer" unique_id=1973590251]
-layout_mode = 2
-theme_override_font_sizes/font_size = 28
-text = "Audio"
-
-[node name="Graphics" type="Button" parent="Panel/VBoxContainer" unique_id=380994563]
-layout_mode = 2
-theme_override_font_sizes/font_size = 28
-text = "Graphics"
-
 [node name="HomeScreen" type="Button" parent="Panel/VBoxContainer" unique_id=1217837050]
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
@@ -71,6 +61,16 @@ text = "Home Screen"
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Close Settings"
+
+[node name="FullScreen" type="CheckButton" parent="Panel/VBoxContainer" unique_id=1718746090]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Full Screen"
+
+[node name="CheckButton" type="CheckButton" parent="Panel/VBoxContainer" unique_id=335117874]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Mute"
 
 [node name="Quit" type="Button" parent="Panel/VBoxContainer" unique_id=466676717]
 layout_mode = 2
