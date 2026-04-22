@@ -7,7 +7,6 @@ func _ready():
 	$Level3.pressed.connect(_on_start_button_pressed.bind(3))
 	$Level4.pressed.connect(_on_start_button_pressed.bind(4))
 	$Level5.pressed.connect(_on_start_button_pressed.bind(5))
-	$Level6.pressed.connect(_on_start_button_pressed.bind(6))
 	$Tutorial.pressed.connect(_tutorial)
 	
 func _tutorial():
