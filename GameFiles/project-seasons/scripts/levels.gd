@@ -3,6 +3,15 @@ extends Node2D
 var settings_scene = preload("res://scenes/SettingsMenu.tscn")
 var input_locked = false
 
+var background
+
+var season_backgrounds = {
+	"Winter": preload("res://assets/backrounds/bg_winter.png"),
+	"Spring": preload("res://assets/backrounds/bg_spring.png"),
+	"Summer": preload("res://assets/backrounds/bg_summer.png"),
+	"Fall": preload("res://assets/backrounds/bg_Autumn.png")
+}
+
 const TILE_SIZE = 32  # our sprites are 32x32
 var seasons_array = ["Winter", "Spring", "Summer", "Fall"]
 
@@ -31,6 +40,26 @@ var beehives = []
 var beehivespos = []
 
 func _ready():
+	var bg_layer = CanvasLayer.new()
+	bg_layer.name = "BackgroundLayer"
+	bg_layer.layer = -10
+	add_child(bg_layer)
+
+	background = TextureRect.new()
+	background.name = "Background"
+	background.texture = season_backgrounds["Winter"]
+
+	background.set_anchors_preset(Control.PRESET_FULL_RECT)
+	background.offset_left = 0
+	background.offset_top = 0
+	background.offset_right = 0
+	background.offset_bottom = 0
+
+	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	background.stretch_mode = TextureRect.STRETCH_SCALE
+
+	bg_layer.add_child(background)
+	
 	setup_ui()
 	load_stage(current_stage)
 
@@ -197,7 +226,7 @@ func load_stage(stage_num: int):
 func clear_level():
 	# remove all child nodes except UI and camera for the reset
 	for child in get_children():
-		if child.name != "UI" and child.name != "Camera":
+		if child.name != "UI" and child.name != "Camera" and child.name != "Background" and child.name != "BackgroundLayer":
 			child.queue_free()
 	
 	boxes.clear()
@@ -718,6 +747,7 @@ func switch_season():
 			$UI/RightPanel/HUD/WindDirection.text = "Wind: ↓"
 	if season != "Fall":
 		$UI/RightPanel/HUD/WindDirection.text = "Wind: ×"
+	background.texture = season_backgrounds[season]
 
 #LEVEL BUILDING KEY:
 # p = player
