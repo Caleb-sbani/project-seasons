@@ -4,6 +4,12 @@ var settings_scene = preload("res://scenes/SettingsMenu.tscn")
 
 var input_locked = false
 
+func _init() -> void:
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	DisplayServer.window_set_size(Vector2i(1152, 648)*ProjectSettings.get_setting("display/window/stretch/scale"))
+	
+	
+
 func _ready():
 	# Connect button signal
 	$StartButton.pressed.connect(_on_start_button_pressed)
@@ -12,10 +18,7 @@ func _ready():
 	
 
 func _on_start_button_pressed():
-	# Change to your first level or level select
 	get_tree().change_scene_to_file("res://scenes/LevelSelect.tscn")
-	# Or for testing, just print:
-	# print("Starting game!")
 
 func _on_settings_button_pressed():
 	if input_locked:
