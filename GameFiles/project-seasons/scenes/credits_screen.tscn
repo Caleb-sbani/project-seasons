@@ -1,18 +1,6 @@
 [gd_scene format=3 uid="uid://7k65mryrykp2"]
 
-[sub_resource type="GDScript" id="GDScript_nqo0t"]
-script/source = "extends Control
-
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-"
+[ext_resource type="Script" uid="uid://cwfgh56yst2wx" path="res://scripts/credits_screen.gd" id="1_8n838"]
 
 [node name="Credits Screen" type="Control" unique_id=715456136]
 layout_mode = 3
@@ -21,4 +9,4 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = SubResource("GDScript_nqo0t")
+script = ExtResource("1_8n838")

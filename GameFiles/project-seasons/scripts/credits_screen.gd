@@ -68,4 +68,4 @@ func start_fade_sequence():
 	await tween.finished
 	
 	# Go to main menu or title screen
-	get_tree().change_scene_to_file("res://scenes/TitleScreen.tscn")
+	get_tree().change_scene_to_file("res://scenes/title_screen.tscn")

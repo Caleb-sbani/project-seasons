@@ -416,7 +416,7 @@ func try_move_player(direction: Vector2i):
 				var tileat = get_tile_at(new_pos)
 				match tileat:
 					'B':
-						if (step_counter%4 != 3):
+						if (step_counter%change_frequency != change_frequency-1):
 							player_death("Stung by a bee!", new_pos)
 						return
 					'w':
@@ -464,14 +464,14 @@ func can_move_to(grid_pos: Vector2i) -> bool:
 		return false
 	
 	# water kills you when not about to turn to ice
-	if (tile == 'W' and season == "Fall" and step_counter%4 == 3):
+	if (tile == 'W' and season == "Fall" and step_counter%change_frequency == change_frequency-1):
 		return true
 	if (tile == 'W' and season != "Winter"):
 		player_death("You drowned!", grid_pos)
 		return false
 	
 	# bees sting you to death
-	if tile == 'B' and season == "Spring" and step_counter%4 != 3:
+	if tile == 'B' and season == "Spring" and step_counter%change_frequency != change_frequency-1:
 		player_death("Ouch! Stung by a bee!", grid_pos)
 		return false
 	
@@ -643,8 +643,7 @@ func on_goal_reached():
 	GlobalLevel.completedLevel = current_stage
 	if current_stage == total_stages:
 		await fade_to_black()
-		# go to level select (not yet implemented)
-		get_tree().change_scene_to_file("res://scenes/LevelSelect.tscn")
+		get_tree().change_scene_to_file("res://scenes/credits_screen.tscn")
 	else:
 		# fade to black and load next stage
 		await fade_to_black()
