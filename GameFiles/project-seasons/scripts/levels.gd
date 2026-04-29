@@ -214,8 +214,10 @@ func load_stage(stage_num: int):
 			season = "Fall"
 			load_level_four()
 			switch_season()
-#		5:
-#			load_stage_5()
+		5:
+			season = "Winter"
+			load_level_five()
+			switch_season()
 #		6:
 #			load_stage_6()
 #		7:
@@ -765,6 +767,7 @@ func switch_season():
 
 
 func load_level_one():
+	change_frequency = 4
 	wind_direction = Vector2i(1, 0)
 	var layout = [
 		"wggggwggbggg",
@@ -777,6 +780,7 @@ func load_level_one():
 	create_map(layout)
 
 func load_level_two():
+	change_frequency = 4
 	wind_direction = Vector2i(1, 0)
 	season = "Summer"
 	var layout = [
@@ -789,6 +793,7 @@ func load_level_two():
 	create_map(layout)
 	
 func load_level_three():
+	change_frequency = 4
 	wind_direction = Vector2i(1, 0)
 	var layout = [
 		"ggmWWgggggswwbWggg",
@@ -801,6 +806,7 @@ func load_level_three():
 	create_map(layout)
 	
 func load_level_four():
+	change_frequency = 4
 	wind_direction = Vector2i(0, 1)  # wind blows downward for Fall
 	var layout = [
 		"pggsggggwgggb",
@@ -808,5 +814,23 @@ func load_level_four():
 		"ssssssWWwgwwh",
 		"ggggwwWWggwhh",
 		"bbbbgWgggwhhG"
+	]
+	create_map(layout)
+
+
+func load_level_five():
+	change_frequency = 5
+	wind_direction = Vector2i(-1, 0)
+	var layout = [
+		"gHggHgggWwbgpg",
+		"ggggwgHwgggggg",
+		"ggggWwEEEEEEEE",
+		"ggmwggggWgwggg",
+		"bggWgmgghwgggH",
+		"gggwgggggWbggg",
+		"EEEEEEEEEEEgmg",
+		"ggwgbggwhgwggb",
+		"Gwgggggwghwggg",
+		"WgbHggWwHWgggg"
 	]
 	create_map(layout)
