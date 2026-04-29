@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://ct6rpg522ftq"]
 
-[ext_resource type="Script" uid="uid://doondwaold0t" path="res://scripts/settings_menu.gd" id="1_svoao"]
+[ext_resource type="Script" uid="uid://5rvep0ooo7vm" path="res://scripts/settings_menu.gd" id="1_svoao"]
 
 [node name="Control" type="Control" unique_id=235169812]
 layout_mode = 3
@@ -52,11 +52,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Settings"
 
-[node name="HomeScreen" type="Button" parent="Panel/VBoxContainer" unique_id=1217837050]
-layout_mode = 2
-theme_override_font_sizes/font_size = 28
-text = "Home Screen"
-
 [node name="CloseSetting" type="Button" parent="Panel/VBoxContainer" unique_id=325016809]
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
@@ -67,10 +62,31 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Full Screen"
 
-[node name="CheckButton" type="CheckButton" parent="Panel/VBoxContainer" unique_id=335117874]
+[node name="MuteButton" type="CheckButton" parent="Panel/VBoxContainer" unique_id=335117874]
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Mute"
+
+[node name="ZoomButton" type="MenuButton" parent="Panel/VBoxContainer" unique_id=1454679196]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Zoom"
+item_count = 3
+popup/item_0/text = "1"
+popup/item_0/checkable = 2
+popup/item_0/checked = true
+popup/item_0/id = 0
+popup/item_1/text = "2"
+popup/item_1/checkable = 2
+popup/item_1/id = 1
+popup/item_2/text = "3"
+popup/item_2/checkable = 2
+popup/item_2/id = 2
+
+[node name="HomeScreen" type="Button" parent="Panel/VBoxContainer" unique_id=1217837050]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Home Screen"
 
 [node name="Quit" type="Button" parent="Panel/VBoxContainer" unique_id=466676717]
 layout_mode = 2
