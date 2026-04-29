@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://nofxe2atpnht"]
+[gd_scene format=3 uid="uid://nofxe2atpnht"]
 
 [ext_resource type="Script" uid="uid://bwgbupr3a8ppl" path="res://scripts/tutorial_lvl.gd" id="1_7gqcx"]
 
