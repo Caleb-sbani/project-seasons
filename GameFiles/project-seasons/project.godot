@@ -15,13 +15,18 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Project Seasons"
-run/main_scene="uid://b6v8hjfe6047k"
+run/main_scene="uid://c2hu76hl7vkdp"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]
 
 GlobalLevel="*uid://d28dvoywyyemq"
+
+[display]
+
+window/size/mode=4
+window/subwindows/embed_subwindows=false
 
 [rendering]
 
